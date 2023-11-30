@@ -2,6 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, Image, TextInput, FlatList, Modal } from 'react-native';
 import { useState } from 'react';
 
+import CustomModal from './components/CustomModal';
+import CustomInput from './components/CustomInput';
+
 export default function App() {
 
   const [newItem,setNewItem] = useState("");
@@ -21,41 +24,50 @@ export default function App() {
   const renderItemList = ({item}) => {
     return (
       <View style={styles.itemList}>
-        <Text>{item.value}</Text>
-        <Button title='X'></Button>
+        <Text style={styles.itemListText}>{item.value}</Text>
+        <Button onPress={()=>onSelectItemHandler(item.id)} title='X'></Button>
       </View>
     )
+  }
+
+  const onSelectItemHandler = (id) => {
+    setModalVisible(!modalVisible)
+    setItemSelectedToDelete(itemList.find(item => item.id === id))
+  }
+
+  const onDeleteItemHandler = () => {
+    setItemList(itemList.filter(item=>item.id != itemSelectedToDelete.id));
+    setModalVisible(false);
   }
 
   return (
     <>
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput onChangeText={onChangeTextHandler} style={styles.textInput} value={newItem} placeholder='Ingrese su tarea...'/>
-        <Button onPress={addItemToListHandler} title='Añadir'></Button>
-      </View>
+      <CustomInput 
+        onChangeTextHandlerEvent={onChangeTextHandler}
+        newItemProp={newItem}
+        addItemToListHandlerEvent={addItemToListHandler}
+      />
+      
       {/* <View>
         {itemList.map(item=><View key={item.id}><Text>{item.value}</Text></View>)}
       </View> */}
       
-        <FlatList style={styles.flatList} 
+      <FlatList 
         data={itemList} 
         renderItem={renderItemList} 
         keyExtractor={item=>item.id}
-        />
+      />
       
       <StatusBar style="auto" />
     </View>
-    <Modal animationType='slide' visible={modalVisible}>
-      <View style={styles.modalMessageContainer}>
-        <Text>Se eliminará: </Text>
-        <Text>{itemSelectedToDelete.value}</Text>
-      </View>
-      <View style={styles.modalButtonContainer}>
-        <Button title="Cancelar"></Button>
-        <Button title="Eliminar"></Button>
-      </View>
-    </Modal>
+    <CustomModal 
+      animationTypeProp={"slide"}
+      isVisibleProp={modalVisible}
+      itemSelectedToDeleteProp={itemSelectedToDelete}
+      onDeleteItemHandlerEvent={onDeleteItemHandler}
+      setModalVisibleEvent={setModalVisible}
+    />
     </>
   );
 }
@@ -65,28 +77,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 50,
   },
-  inputContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textInput: {
-    fontSize: 20,
-    padding: 15,
-  },
-  flatList: {
-    backgroundColor: "yellow"
-  },
   itemList: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  modalMessageContainer: {
-    marginTop: 50,
-    alignItems: "center",
-  },
-  modalButtonContainer:{
-    flexDirection:"row",
-    justifyContent: "space-evenly",
-    paddingTop: 20,
+    justifyContent: "space-between",
+    borderRadius: 20,
+    backgroundColor: "cyan",
+    padding: 15,
+    margin: 10,
   },
 });
