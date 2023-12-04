@@ -10,10 +10,17 @@ export default function App() {
   const [newItem,setNewItem] = useState("");
   const [itemList,setItemList] = useState([]);
   const [itemSelectedToDelete,setItemSelectedToDelete] = useState({});
-  const [modalVisible,setModalVisible] = useState(false);
+  const [modalToDeleteVisible,setModalToDeleteVisible] = useState(false);
+  const [itemSelectedToEdit,setItemSelectedToEdit] = useState({});
+  const [modalToEditVisible,setModalToEditVisible] = useState(false);
+  const [editItem,setEditItem] = useState("");
 
-  const onChangeTextHandler = (text) => {
+  const onChangeTextAddItemHandler = (text) => {
     setNewItem(text);
+  }
+
+  const onChangeTextEditItemHandlerEvent = (text) => {
+    setEditItem(text);
   }
 
   const addItemToListHandler = () => {
@@ -25,33 +32,44 @@ export default function App() {
     return (
       <View style={styles.itemList}>
         <Text style={styles.itemListText}>{item.value}</Text>
-        <Button onPress={()=>onSelectItemHandler(item.id)} title='X'></Button>
+        <View style={styles.itemListButtons}>
+          <Button onPress={()=>onSelectItemDeleteHandler(item.id)} title='X'></Button>
+          <Button onPress={()=>onSelectItemEditHandler(item.id)} title='Editar'></Button>
+        </View>
       </View>
     )
   }
 
-  const onSelectItemHandler = (id) => {
-    setModalVisible(!modalVisible)
-    setItemSelectedToDelete(itemList.find(item => item.id === id))
+  const onSelectItemDeleteHandler = (id) => {
+    setItemSelectedToDelete(itemList.find(item => item.id === id));
+    setModalToDeleteVisible(!modalToDeleteVisible);
   }
 
   const onDeleteItemHandler = () => {
     setItemList(itemList.filter(item=>item.id != itemSelectedToDelete.id));
-    setModalVisible(false);
+    setModalToDeleteVisible(false);
+  }
+
+  const onSelectItemEditHandler = (id) => {
+    setItemSelectedToEdit(itemList.find(item => item.id === id));
+    setModalToEditVisible(!modalToEditVisible);
+  }
+
+  const onEditItemHandler = () => {
+    setItemList(itemList.filter(item => item.id != itemSelectedToEdit.id));
+    setItemList(prevState => [...prevState,{id: itemSelectedToEdit.id,value:editItem}]);
+
+    setModalToEditVisible(false);
   }
 
   return (
     <>
     <View style={styles.container}>
       <CustomInput 
-        onChangeTextHandlerEvent={onChangeTextHandler}
+        onChangeTextHandlerEvent={onChangeTextAddItemHandler}
         newItemProp={newItem}
         addItemToListHandlerEvent={addItemToListHandler}
       />
-      
-      {/* <View>
-        {itemList.map(item=><View key={item.id}><Text>{item.value}</Text></View>)}
-      </View> */}
       
       <FlatList 
         data={itemList} 
@@ -63,10 +81,20 @@ export default function App() {
     </View>
     <CustomModal 
       animationTypeProp={"slide"}
-      isVisibleProp={modalVisible}
-      itemSelectedToDeleteProp={itemSelectedToDelete}
-      onDeleteItemHandlerEvent={onDeleteItemHandler}
-      setModalVisibleEvent={setModalVisible}
+      isVisibleProp={modalToDeleteVisible}
+      modalFunction={"Eliminar"}
+      itemSelectedProp={itemSelectedToDelete}
+      onAcceptItemHandlerEvent={onDeleteItemHandler}
+      setModalVisibleEvent={setModalToDeleteVisible}
+    />
+    <CustomModal
+      animationTypeProp={"slide"}
+      isVisibleProp={modalToEditVisible}
+      modalFunction={"Editar"}
+      itemSelectedProp={itemSelectedToEdit}
+      onChangeTextEditItemHandlerEvent={onChangeTextEditItemHandlerEvent}
+      onAcceptItemHandlerEvent={onEditItemHandler}
+      setModalVisibleEvent={setModalToEditVisible}
     />
     </>
   );
@@ -86,4 +114,7 @@ const styles = StyleSheet.create({
     padding: 15,
     margin: 10,
   },
+  itemListButtons: {
+    flexDirection: "row",
+  }
 });
