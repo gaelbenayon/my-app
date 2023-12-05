@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, Image, TextInput, FlatList, Modal } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 import { useState } from 'react';
 
 import CustomModal from './components/CustomModal';
@@ -31,7 +31,7 @@ export default function App() {
   const renderItemList = ({item}) => {
     return (
       <View style={styles.itemList}>
-        <Text style={styles.itemListText}>{item.value}</Text>
+        <Text>{item.value}</Text>
         <View style={styles.itemListButtons}>
           <Button onPress={()=>onSelectItemDeleteHandler(item.id)} title='X'></Button>
           <Button onPress={()=>onSelectItemEditHandler(item.id)} title='Editar'></Button>
@@ -58,13 +58,15 @@ export default function App() {
   const onEditItemHandler = () => {
     setItemList(itemList.filter(item => item.id != itemSelectedToEdit.id));
     setItemList(prevState => [...prevState,{id: itemSelectedToEdit.id,value:editItem}]);
-
+    setEditItem("");
     setModalToEditVisible(false);
   }
 
   return (
     <>
     <View style={styles.container}>
+      <StatusBar style="auto" />
+      
       <CustomInput 
         onChangeTextHandlerEvent={onChangeTextAddItemHandler}
         newItemProp={newItem}
@@ -76,8 +78,6 @@ export default function App() {
         renderItem={renderItemList} 
         keyExtractor={item=>item.id}
       />
-      
-      <StatusBar style="auto" />
     </View>
     <CustomModal 
       animationTypeProp={"slide"}
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 20,
+    borderRadius: 15,
     backgroundColor: "cyan",
     padding: 15,
     margin: 10,

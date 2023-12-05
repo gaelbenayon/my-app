@@ -13,12 +13,12 @@ const CustomModal = ({
         <Modal animationType={animationTypeProp} visible={isVisibleProp}>
             <View style={styles.modal}>
                 <View style={styles.modalMessageContainer}>
-                    <Text>{modalFunction.toUpperCase()}: </Text>
+                    <Text style={styles.messageTitle}>{modalFunction.toUpperCase()}: </Text>
                     <Text>"{itemSelectedProp.value}"</Text>
                 </View>
                 <View style={styles.modalEditInput}>
                     {modalFunction == "Editar" && 
-                        <TextInput onChangeText={onChangeTextEditItemHandlerEvent} placeholder='Modifique aquí su tarea'></TextInput>
+                        <TextInput defaultValue={itemSelectedProp.value} onChangeText={onChangeTextEditItemHandlerEvent} placeholder='Modifique aquí su tarea'></TextInput>
                     }
                 </View>
                 <View style={styles.modalButtonContainer}>
@@ -37,6 +37,9 @@ const styles = StyleSheet.create({
     modalMessageContainer: {
         marginTop: 50,
         alignItems: "center",
+    },
+    messageTitle:{
+        marginBottom:5,
     },
     modalEditInput: {
         marginTop: 10,
